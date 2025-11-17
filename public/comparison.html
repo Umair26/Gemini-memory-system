@@ -18,6 +18,20 @@
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
+    .back-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .back-button:hover {
+      background: #5a6268;
+    }
     h1 { 
       text-align: center; 
       color: #333;
@@ -109,15 +123,80 @@
       display: none;
     }
     .error.active { display: block; }
+    
+    /* Donation Footer */
+    .donation-footer {
+      margin-top: 50px;
+      padding: 40px 30px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 15px;
+      text-align: center;
+      border: 2px solid #dee2e6;
+    }
+    .donation-header {
+      font-size: 1.8em;
+      color: #333;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .donation-text {
+      color: #666;
+      font-size: 1.1em;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+    .donation-highlight {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .donation-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .donation-btn {
+      padding: 15px 35px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .donation-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .btn-coffee {
+      background: #FFDD00;
+      color: #000;
+    }
+    .btn-github {
+      background: #333;
+      color: white;
+    }
+    
     @media (max-width: 768px) {
       .container { grid-template-columns: 1fr; }
       body { margin: 20px auto; padding: 10px; }
+      .donation-buttons { flex-direction: column; }
+      .donation-btn { width: 100%; justify-content: center; }
     }
   </style>
 </head>
 <body>
   <div class="main-container">
-    <h1>🧠 Gemini Memory System vs Standard Gemini</h1>
+    <a href="index.html" class="back-button">← Back to Home</a>
+    
+    <h1>🧠 MemoryAI System vs Standard Gemini</h1>
     
     <div class="input-section">
       <input type="text" id="message" placeholder="Try: 'My name is John' then 'What's my name?'">
@@ -137,7 +216,7 @@
     
     <div class="container">
       <div class="panel with-memory">
-        <h2>🚀 Your Gemini Memory System</h2>
+        <h2>🚀 Your MemoryAI System</h2>
         <ul class="features">
           <li>Unlimited Memory</li>
           <li>Context Awareness</li>
@@ -162,7 +241,18 @@
         </div>
       </div>
     </div>
-  </div>
+    
+    <!-- Donation Footer -->
+    <div class="donation-footer">
+      <div class="donation-header">☕ Support MemoryAI Development</div>
+      <div class="donation-text">
+        This project saves you <strong>75% on AI costs</strong>. If you find it valuable, consider supporting our work!<br>
+        Your support helps us maintain and improve MemoryAI for everyone.
+      </div>
+      <div class="donation-buttons">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="Jeremiahgesters" data-color="#667eea" data-emoji="🙏" data-font="Inter" data-text="Donate Please" data-outline-color="#764ba2" data-font-color="#ffffff" data-coffee-color="#FFDD00"></script>
+      </div>
+    </div>
 
   <script>
     async function compare() {
@@ -176,13 +266,9 @@
         return;
       }
       
-      // Show loading, disable button
       loading.classList.add('active');
       compareBtn.disabled = true;
       errorDiv.classList.remove('active');
-      
-      console.log('🔍 Sending request to /api/compare...');
-      console.log('📍 Current URL:', window.location.href);
       
       try {
         const response = await fetch('/api/compare', {
@@ -191,18 +277,13 @@
           body: JSON.stringify({ message })
         });
         
-        console.log('📥 Response status:', response.status);
-        
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ Error response:', errorText);
           throw new Error(`Server error (${response.status}): ${errorText}`);
         }
         
         const data = await response.json();
-        console.log('✅ Response data:', data);
         
-        // Update with memory response
         document.getElementById('with-memory-response').innerHTML = `
           <strong>Model:</strong> ${data.comparison.withMemory.model}<br>
           <strong>Has Context:</strong> ${data.comparison.withMemory.hasContext ? '✅ Yes' : '❌ No'}<br>
@@ -210,14 +291,12 @@
           <strong>Response:</strong><br>${data.comparison.withMemory.response}
         `;
         
-        // Update without memory response
         document.getElementById('without-memory-response').innerHTML = `
           <strong>Model:</strong> ${data.comparison.withoutMemory.model}<br>
           <strong>Has Context:</strong> ❌ No<br><br>
           <strong>Response:</strong><br>${data.comparison.withoutMemory.response}
         `;
         
-        // Update stats
         document.getElementById('stats').style.display = 'block';
         document.getElementById('statsContent').innerHTML = `
           Total Queries: ${data.stats.totalQueries} | 
@@ -240,7 +319,6 @@
       errorDiv.classList.add('active');
     }
     
-    // Allow Enter key to submit
     document.getElementById('message').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         compare();
