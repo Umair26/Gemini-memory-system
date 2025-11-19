@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "gemini-memory",
+   "name": "Memory-Commerce",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {

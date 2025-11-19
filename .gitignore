@@ -37,3 +37,9 @@ build/
 # Temporary files
 tmp/
 temp/
+
+*.log
+.vscode/
+.DS_Store
+dist/
+build/
