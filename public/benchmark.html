@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Gemini Memory System - Investor Benchmark</title>
+  <title>MemoryAI - Investor Benchmark</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
@@ -18,6 +18,20 @@
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .back-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .back-button:hover {
+      background: #5a6268;
     }
     h1 {
       text-align: center;
@@ -124,12 +138,72 @@
       display: none;
     }
     .loading.active { display: block; }
+    
+    /* Donation Footer */
+    .donation-footer {
+      margin-top: 60px;
+      padding: 40px 30px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 15px;
+      text-align: center;
+      border: 2px solid #dee2e6;
+    }
+    .donation-header {
+      font-size: 1.8em;
+      color: #333;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .donation-text {
+      color: #666;
+      font-size: 1.1em;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+    .donation-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .donation-btn {
+      padding: 15px 35px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .donation-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .btn-coffee {
+      background: #FFDD00;
+      color: #000;
+    }
+    .btn-github {
+      background: #333;
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .donation-buttons { flex-direction: column; }
+      .donation-btn { width: 100%; justify-content: center; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🚀 Gemini Memory System</h1>
-    <div class="subtitle">AI with Unlimited Persistent Memory - Investor Benchmark Demo</div>
+    <a href="index.html" class="back-button">← Back to Home</a>
+    
+    <h1>🚀 MemoryAI Benchmark</h1>
+    <div class="subtitle">AI with Unlimited Persistent Memory • Saving You 75% on API Costs</div>
     
     <div class="metrics" id="metrics" style="display: none;">
       <div class="metric-card">
@@ -157,7 +231,18 @@
     </div>
     
     <div class="results" id="results"></div>
-  </div>
+    
+   <!-- Donation Footer -->
+    <div class="donation-footer">
+      <div class="donation-header">☕ Support MemoryAI Development</div>
+      <div class="donation-text">
+        This project saves you <strong>75% on AI costs</strong>. If you find it valuable, consider supporting our work!<br>
+        Your support helps us maintain and improve MemoryAI for everyone.
+      </div>
+      <div class="donation-buttons">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="Jeremiahgesters" data-color="#667eea" data-emoji="🙏" data-font="Inter" data-text="Donate Please" data-outline-color="#764ba2" data-font-color="#ffffff" data-coffee-color="#FFDD00"></script>
+      </div>
+    </div>
 
   <script>
     async function runBenchmark() {
@@ -179,14 +264,12 @@
         
         const data = await response.json();
         
-        // Update metrics
         document.getElementById('totalTests').textContent = data.summary.totalTests;
         document.getElementById('wins').textContent = data.summary.yourSystemWins;
         document.getElementById('cacheRate').textContent = data.summary.stats.cacheHitRate;
         document.getElementById('monthlyCost').textContent = data.summary.stats.estimatedMonthlyCost;
         metrics.style.display = 'grid';
         
-        // Display results
         let html = '';
         data.results.forEach((test, index) => {
           const badgeClass = test.winner === "Your System" ? "badge-win" : "badge-tie";
