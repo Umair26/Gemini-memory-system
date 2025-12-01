@@ -491,10 +491,12 @@ app.get("/api/stats", (req, res) => {
 // STATIC FILES LAST (serves index.html at root)
 app.use(express.static(path.join(__dirname, 'public')));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
   console.log(`
-✅ API Server running on http://localhost:${PORT}
+✅ API Server running on http://${HOST}:${PORT}
 
 Endpoints:
   GET    /                    - Home page
