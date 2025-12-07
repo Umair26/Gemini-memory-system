@@ -1,14 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { Chroma } from "@langchain/community/vectorstores/chroma";
-import { ChromaClient } from "chromadb";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
-
-const chromaClient = new ChromaClient({
-  host: "localhost",
-  port: 8000
-});
 
 const model = new ChatGoogleGenerativeAI({
     model: "gemini-2.5-flash",
@@ -22,20 +16,18 @@ const embeddings = new GoogleGenerativeAIEmbeddings({
   apiKey: process.env.GOOGLE_API_KEY,
 });
 
+// Use in-memory vector store instead of ChromaDB
 let vectorStore;
 try {
-  vectorStore = await Chroma.fromExistingCollection(embeddings, {
-    collectionName: "conversation_memory",
-    url: "http://localhost:8000",
-  });
-  console.log("✅ Connected to existing ChromaDB collection");
+  vectorStore = new MemoryVectorStore(embeddings);
+  console.log("✅ In-memory vector store initialized");
 } catch (error) {
-  console.log("📦 Creating new ChromaDB collection...");
-  vectorStore = await Chroma.fromDocuments([], embeddings, {
-    collectionName: "conversation_memory",
-    url: "http://localhost:8000",
-  });
-  console.log("✅ ChromaDB collection created");
+  console.log("⚠️ Vector store initialization failed:", error.message);
+  // Create a fallback null object
+  vectorStore = {
+    addDocuments: async () => {},
+    similaritySearch: async () => []
+  };
 }
 
 class EnhancedMemory {
@@ -94,22 +86,26 @@ class EnhancedMemory {
             return;
         }
 
-        const summary = await model.invoke(
-            `Summarize the following conversation:\n\n${history}`
-        );
+        try {
+            const summary = await model.invoke(
+                `Summarize the following conversation:\n\n${history}`
+            );
 
-        this.messages = [
-            new SystemMessage(`CONVERSATION SUMMARY: ${summary.content}`),
-            ...this.messages.slice(-10)
-        ];
-        
-        this.chatHistory = [
-            { input: "SUMMARY", output: summary.content, timestamp: Date.now() },
-            ...this.chatHistory.slice(-5)
-        ];
-        
-        this.currentTokens = summary.content.length / 4;
-        console.log("✅ History summarized");
+            this.messages = [
+                new SystemMessage(`CONVERSATION SUMMARY: ${summary.content}`),
+                ...this.messages.slice(-10)
+            ];
+            
+            this.chatHistory = [
+                { input: "SUMMARY", output: summary.content, timestamp: Date.now() },
+                ...this.chatHistory.slice(-5)
+            ];
+            
+            this.currentTokens = summary.content.length / 4;
+            console.log("✅ History summarized");
+        } catch (error) {
+            console.log("⚠️ Could not summarize:", error.message);
+        }
     }
 
     async retrieveRelevantContext(query) {
@@ -160,5 +156,8 @@ class EnhancedMemory {
 }
 
 const memory = new EnhancedMemory();
+
+// Export chromaClient as null for compatibility
+const chromaClient = null;
 
 export { model, memory, vectorStore, chromaClient };

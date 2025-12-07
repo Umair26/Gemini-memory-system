@@ -1,0 +1,16 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+providers:
+  # Fast general-purpose AI
+  qwen3_fast:
+    type: ollama
+    model: "qwen3-30b"      # replace with your Ollama Qwen3 API model
+    api_key: "176c226e4c5a4bcba027e6e900264ba3.yuY1kagFiCqyM8YhzHbKVoIc"
+
+  # Reasoning / math specialist
+  deepseek_r1:
+    type: http
+    url: "https://api.deepseek.com/v1/models/deepseek-r1/completions"
+    api_key: "YOUR_DEEPSEEK_API_KEY"
